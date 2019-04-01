@@ -7,6 +7,7 @@ Sahil Chopra <schopra8@stanford.edu>
 """
 
 import sys
+from collections import deque
 
 class PartialParse(object):
     def __init__(self, sentence):
@@ -31,6 +32,10 @@ class PartialParse(object):
         ### Note: The root token should be represented with the string "ROOT"
         ###
 
+        self.stack = ["ROOT"]
+        self.buffer = sentence[:]
+        self.dependencies = []
+
 
         ### END YOUR CODE
 
@@ -50,6 +55,14 @@ class PartialParse(object):
         ###         2. Left Arc
         ###         3. Right Arc
 
+        if transition == "S":
+            self.stack.append(self.buffer.pop(0))
+        
+        if transition == "LA":
+            self.dependencies.append((self.stack[-1], self.stack.pop(-2)))
+
+        if transition == "RA":
+            self.dependencies.append((self.stack[-2], self.stack.pop(-1)))
 
         ### END YOUR CODE
 
@@ -101,6 +114,24 @@ def minibatch_parse(sentences, model, batch_size):
     ###             to remove objects from the `unfinished_parses` list. This will free the underlying memory that
     ###             is being accessed by `partial_parses` and may cause your code to crash.
 
+    partial_parses = [PartialParse(sentence) for sentence in sentences]
+    unfinished_parses = partial_parses[:]
+
+    #We use basic functional programming elements like mapping and filtering. 
+    #Note that "map" and "filter" functions are returning generators in Python 3 and don't perform actual calculations until we yield an element from these generators. 
+    #To force calculations we cast generators to lists explicitly. We care only about side effects of these calculations so no need to assign returned values to any variable.
+    while len(unfinished_parses) > 0:
+        transitions = model.predict(unfinished_parses[:batch_size])
+
+        apply_transition = lambda x: x[0].parse_step(x[1])
+        list(map(apply_transition, zip(unfinished_parses[:batch_size], transitions)))
+        
+        is_parse_finished = lambda x: (len(x.buffer) == 0) & (len(x.stack) == 1)
+        finished_parsers = filter(is_parse_finished, unfinished_parses[:batch_size])
+        
+        list(map(lambda x: unfinished_parses.remove(x), finished_parsers))
+
+    dependencies = list(map(lambda x: x.dependencies, partial_parses))
 
     ### END YOUR CODE
 
