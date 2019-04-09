@@ -40,7 +40,13 @@ def pad_sents_char(sents, char_pad_token):
     ###
     ###     You should NOT use the method `pad_sents()` below because of the way it handles 
     ###     padding and unknown words.
-
+    
+    sents_padded = []
+    ss = [xi+[[char_pad_token]]*(max_sentence_length-len(xi)) for xi in sents]
+    for sentence in ss:
+        sent_padded = [xi + [char_pad_token]*(max_word_length-len(xi)) for xi in sentence]
+        sents_padded.extend([sent_padded])
+        
     ### END YOUR CODE
     
     return sents_padded
