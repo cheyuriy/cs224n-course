@@ -21,10 +21,10 @@ class TestVocabEntry(unittest.TestCase):
         self.assertEqual(self.ve.words2charindices([x.split(" ") for x in s.split(". ")]), result, "Incorrect result")
 
     def test_to_input_tensor_char(self):
-        text = "I ate an apple. I want one more apple to eat. Apples are nice"
+        text = "I ate an apple. I want one more apple to eat. Apples are nice. Somereallylongwordoutherelook and be careful"
         sents = [s.split(" ") for s in text.split(". ")]
         tensor = self.ve.to_input_tensor_char(sents, None)
-        self.assertEqual(list(tensor.size()), [7, 3, 21], "Size is incorrect")
+        self.assertEqual(list(tensor.size()), [7, 4, 21], "Size is incorrect")
 
 if __name__ == '__main__':
     unittest.main()

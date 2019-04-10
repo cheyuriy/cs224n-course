@@ -44,7 +44,7 @@ def pad_sents_char(sents, char_pad_token):
     sents_padded = []
     ss = [xi+[[char_pad_token]]*(max_sentence_length-len(xi)) for xi in sents]
     for sentence in ss:
-        sent_padded = [xi + [char_pad_token]*(max_word_length-len(xi)) for xi in sentence]
+        sent_padded = [xi[:max_word_length] + [char_pad_token]*np.maximum(0,max_word_length-len(xi)) for xi in sentence]
         sents_padded.extend([sent_padded])
         
     ### END YOUR CODE

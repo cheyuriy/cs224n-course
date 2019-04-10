@@ -25,6 +25,7 @@ import json
 import torch
 from typing import List
 from utils import read_corpus, pad_sents, pad_sents_char
+import numpy as np
 
 class VocabEntry(object):
     """ Vocabulary Entry, i.e. structure containing either
@@ -161,8 +162,9 @@ class VocabEntry(object):
         ###     Connect `words2charindices()` and `pad_sents_char()` which you've defined in 
         ###     previous parts
 
-        sents = pad_sents_char(self.words2charindices(sents), self.char2id['<pad>'])
-        return torch.transpose(torch.tensor(sents, device=device), 0, 1)
+        _sents = pad_sents_char(self.words2charindices(sents), self.char2id['<pad>'])
+        _sents = torch.tensor(_sents, device=device)
+        return torch.transpose(_sents, 0, 1)
         ### END YOUR CODE
 
     def to_input_tensor(self, sents: List[List[str]], device: torch.device) -> torch.Tensor:
