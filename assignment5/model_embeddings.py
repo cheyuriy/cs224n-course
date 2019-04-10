@@ -45,7 +45,7 @@ class ModelEmbeddings(nn.Module):
         self.highway = Highway(embed_size, 0.3)
         self.max_word_length = 21
         self.cnn = CNN(50, embed_size, 5)
-        self.char_embeddings = nn.Embedding(len(vocab), 50, vocab['<pad>'])
+        self.char_embeddings = nn.Embedding(len(vocab.char2id), 50, vocab.char2id['<pad>'])
 
 
         ### END YOUR CODE
